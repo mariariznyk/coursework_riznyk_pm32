@@ -62,5 +62,6 @@ jobs:
         with:
           app-name: 'coursrewok-riznyk-pm32'
           slot-name: 'Production'
-          package: '*.jar'
+          package: './java-app/*.jar'
+
           
