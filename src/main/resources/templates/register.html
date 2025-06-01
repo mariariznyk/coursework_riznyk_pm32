@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Реєстрація</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .error {
+            border: 1px solid red;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Реєстрація</h2>
+    <form id="registerForm" th:action="@{/register}" method="post" onsubmit="return validateForm()">
+        <label for="fullName">ПІБ (укр., 3 слова):</label>
+        <input type="text" id="fullName" name="fullName" placeholder="Прізвище Ім’я По-батькові">
+        <div id="fullNameError" class="error-message"></div>
+
+        <label for="email">Електронна пошта:</label>
+        <input type="text" id="email" name="email" placeholder="example@domain.com">
+        <div id="emailError" class="error-message"></div>
+        <div id="emailCheckMessage" class="error-message"></div>
+
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" placeholder="Введіть пароль">
+        <div id="passwordError" class="error-message"></div>
+
+        <label for="confirmPassword">Повторіть пароль:</label>
+        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Повторіть пароль">
+        <div id="confirmError" class="error-message"></div>
+
+        <div style="margin-bottom: 10px;">
+            <input type="checkbox" id="togglePassword" onchange="togglePasswordVisibility()">
+            <label for="togglePassword">Показати пароль</label>
+        </div>
+
+        <button type="submit">Зареєструватися</button>
+    </form>
+
+
+</div>
+
+<div class="popup" id="emailPopup">
+    <p>Підтвердіть ваш email натисканням кнопки нижче:</p>
+    <button id="confirmEmailBtn">Підтвердити</button>
+</div>
+
+    <script>
+        const form = document.getElementById("registerForm");
+        const popup = document.getElementById("emailPopup");
+        const confirmBtn = document.getElementById("confirmEmailBtn");
+
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById("password");
+            const confirmPwd = document.getElementById("confirmPassword");
+            const type = pwd.type === "password" ? "text" : "password";
+            pwd.type = type;
+            confirmPwd.type = type;
+        }
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById("fullName");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const confirmPassword = document.getElementById("confirmPassword");
+
+            const namePattern = /^[А-ЯІЇЄҐ][а-яіїєґ']+\s[А-ЯІЇЄҐ][а-яіїєґ']+\s[А-ЯІЇЄҐ][а-яіїєґ']+$/;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            let isValid = true;
+
+            document.querySelectorAll(".error").forEach(el => el.classList.remove("error"));
+            ["fullNameError", "emailError", "passwordError", "confirmError"].forEach(id => document.getElementById(id).innerText = "");
+
+            if (!namePattern.test(fullName.value.trim())) {
+                fullName.classList.add("error");
+                document.getElementById("fullNameError").innerText = "Некоректно введений ПІБ";
+                isValid = false;
+            }
+
+            if (!emailPattern.test(email.value.trim())) {
+                email.classList.add("error");
+                document.getElementById("emailError").innerText = "Некоректна електронна пошта";
+                isValid = false;
+            }
+
+            if (password.value.length < 6) {
+                password.classList.add("error");
+                document.getElementById("passwordError").innerText = "Пароль має бути мін. 6 символів";
+                isValid = false;
+            }
+
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.classList.add("error");
+                document.getElementById("confirmError").innerText = "Паролі не співпадають";
+                isValid = false;
+            }
+
+            if (isValid) {
+                popup.style.display = "block";
+            }
+        });
+
+        confirmBtn.addEventListener("click", function () {
+            popup.style.display = "none";
+
+            form.submit();
+        });
+
+    </script>
+<p style="text-align: center; margin-top: 20px;">
+    Маєш акаунт? <a th:href="@{/login}" style="color: #007bff; text-decoration: none;">Увійди</a>
+</p>
+</body>
+</html>

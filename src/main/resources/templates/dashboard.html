@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Головна сторінка</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-right-buttons">
+        <a href="/queue" class="btn outline">Мій кабінет</a>
+        <form action="/logout" method="post" style="margin: 0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Вийти</button>
+        </form>
+    </div>
+
+    <h2>Черга за послугами</h2>
+
+    <form method="get" action="/dashboard">
+        <label for="service">Оберіть послугу:</label>
+        <select id="service" name="service" onchange="this.form.submit()">
+            <option value="">Оберіть</option>
+            <option th:each="service : ${services}"
+                    th:value="${service}"
+                    th:text="${service}"
+                    th:selected="${service == selectedService}">
+            </option>
+        </select>
+    </form>
+
+    <div class="table-container" th:if="${requests != null}">
+        <table>
+            <thead>
+            <tr>
+                <th>Ім’я користувача</th>
+                <th>Послуга</th>
+                <th>Час запису</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="req : ${requests}">
+                <td th:text="${req.userFullName}"></td>
+                <td th:text="${req.serviceType}"></td>
+                <td th:text="${#temporals.format(req.appointmentTime, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${req.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

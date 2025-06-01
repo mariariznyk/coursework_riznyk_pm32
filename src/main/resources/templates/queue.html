@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мій кабінет</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container">
+    <div class="top-right-buttons">
+        <a href="/dashboard" class="btn outline">На головну</a>
+        <form action="/logout" method="post" style="margin: 0;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Вийти</button>
+        </form>
+    </div>
+
+    <h2>Мої заявки</h2>
+
+    <form id="filterForm" method="get" action="/queue" style="margin-bottom: 10px;">
+        <label>
+            <input type="checkbox" name="onlyActive"
+                   th:attr="checked=${onlyActive} ? 'checked' : null"
+                   onchange="this.form.submit()">
+            Показати тільки активні заявки
+        </label>
+    </form>
+
+    <form th:action="@{/auth/queue/add}" method="post">
+        <div th:if="${error}" class="error-message" style="background-color: #ffe0e0; color: #a00; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+            <p th:text="${error}"></p>
+        </div>
+    <label for="serviceType">Послуга:</label>
+        <select name="serviceType" id="serviceType" required>
+            <option value="" disabled selected>Оберіть послугу</option>
+            <option value="Грошові вклади з врахуванням різних валют">Грошові вклади з врахуванням різних валют</option>
+            <option value="Кредити">Кредити</option>
+            <option value="Банківські/кредитні картки">Банківські/кредитні картки</option>
+            <option value="Іпотека">Іпотека</option>
+            <option value="Індивідуальні сейфи">Індивідуальні сейфи</option>
+            <option value="Платежі">Платежі</option>
+            <option value="Прийом та видача готівки/пенсія">Прийом та видача готівки/пенсія</option>
+            <option value="Грошові перекази">Грошові перекази</option>
+            <option value="Валютно-обмінні операції">Валютно-обмінні операції</option>
+        </select>
+
+        <label for="appointmentTime">Час запису:</label>
+        <input type="datetime-local" id="appointmentTime" name="appointmentTime" required>
+
+        <button type="submit">Додати до черги</button>
+    </form>
+
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Ім’я користувача</th>
+                <th>Послуга</th>
+                <th>Час запису</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="req : ${requests}">
+                <td th:text="${req.userFullName}"></td>
+                <td th:text="${req.serviceType}"></td>
+                <td th:text="${#temporals.format(req.appointmentTime, 'yyyy-MM-dd HH:mm')}">-</td>
+                <td th:text="${req.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
