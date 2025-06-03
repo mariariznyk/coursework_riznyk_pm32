@@ -96,7 +96,7 @@ public class ClientRequestService {
     public void autoProcessQueue() {
         List<ClientRequest> allRequests = repository.findAll();
         LocalDateTime now = LocalDateTime.now();
-
+  System.out.println("Scheduled task running...");
         for (ClientRequest request : allRequests) {
             if ("У черзі".equals(request.getStatus())) {
                 if (request.getAppointmentTime() != null && !now.isBefore(request.getAppointmentTime())) {
